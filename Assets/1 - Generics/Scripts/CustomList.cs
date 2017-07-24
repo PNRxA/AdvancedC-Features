@@ -43,5 +43,24 @@ namespace Generics
             //Increment amount
             amount++;
         }
+
+        public bool Contains(T item)
+        {
+            foreach (var obj in list)
+            {
+                if (EqualityComparer<T>.Default.Equals(obj, item))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void Clear()
+        {
+            T[] cache = new T[0];
+            list = cache;
+            amount = 0;
+        }
     }
 }
