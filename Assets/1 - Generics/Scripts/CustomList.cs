@@ -10,6 +10,7 @@ namespace Generics
         public int amount { get; private set; }
         //Default constructor
         public CustomList() { amount = 0; }
+        private bool itemRemoved;
         //Override for List[0]
         public T this[int index]
         {
@@ -46,21 +47,52 @@ namespace Generics
 
         public bool Contains(T item)
         {
+            //For each item compare them
             foreach (var obj in list)
             {
+                //If item exists return true
                 if (EqualityComparer<T>.Default.Equals(obj, item))
                 {
                     return true;
                 }
             }
+            //Else return false
             return false;
         }
 
         public void Clear()
         {
-            T[] cache = new T[0];
-            list = cache;
+            //Empty list
+            list = null;
             amount = 0;
+        }
+
+        public void Remove(T item)
+        {
+            // Create a new array of amount - 1
+            T[] cache = new T[amount - 1];
+            // Set boolean to false
+            itemRemoved = false;
+            // Check if the list has been initialized
+            if (list != null)
+            {
+                // Copy all existing items to new array except removed item
+                for (int i = 0; i < list.Length; i++)
+                {
+                    if (EqualityComparer<T>.Default.Equals(list[i], item))
+                    {
+                        itemRemoved = true;
+                    }
+                    else
+                    {
+                        cache[i] = itemRemoved ? list[i - 1] : list[i];
+                    }
+                }
+            }
+            // Replace old array with new array
+            list = cache;
+            // decrease amount
+            amount--;
         }
     }
 }

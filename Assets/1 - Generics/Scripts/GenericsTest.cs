@@ -26,11 +26,13 @@ namespace Generics
                 print(gameObjects.amount);
             }
         }
+        List<GameObject> list2 = new List<GameObject>();
+        
+        
 
         // Update is called once per frame
         void Update()
         {
-
             RaycastHit hit;
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             if (Input.GetMouseButtonDown(0))
