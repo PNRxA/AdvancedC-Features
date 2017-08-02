@@ -10,7 +10,7 @@ namespace Delegates
         public List<GameObject> prefabs = new List<GameObject>();
         public int minAmount = 0, maxAmount = 20;
         public float spawnRate = 5f;
-
+        public Transform target;
 
 
         delegate void SpawnType(int amount);
@@ -35,7 +35,6 @@ namespace Delegates
             //Instantiate(prefabs[Random.Range(0, 1)], targets[Random.Range(0, 1)]);
             //Random.Range(minAmount, maxAmount)
             int RR = Random.Range(0, 2);
-            Debug.Log(RR);
             int amount = Random.Range(minAmount, maxAmount);
             spawnType[RR].Invoke(amount);
         }
@@ -44,7 +43,8 @@ namespace Delegates
         {
             for (int i = 0; i < amount; i++)
             {
-                Instantiate(prefabs[0], targets[Random.Range(0, 1)]);
+                GameObject clone = Instantiate(prefabs[0], targets[Random.Range(0, 1)]);
+                clone.GetComponent<Orc>().SetTarget(target);
             }
         }
 
@@ -52,7 +52,8 @@ namespace Delegates
         {
             for (int i = 0; i < amount; i++)
             {
-                Instantiate(prefabs[1], targets[Random.Range(0, 1)]);
+                GameObject clone = Instantiate(prefabs[1], targets[Random.Range(0, 1)]);
+                clone.GetComponent<Troll>().SetTarget(target);
             }
         }
     }

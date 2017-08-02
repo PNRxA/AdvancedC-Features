@@ -24,6 +24,10 @@ namespace Delegates
 
         void Awake()
         {
+        }
+
+        void Start()
+        {
             agent = GetComponent<NavMeshAgent>();
             //Assign delegates to lilst here
             behaviourFuncs.Add(Idle);
