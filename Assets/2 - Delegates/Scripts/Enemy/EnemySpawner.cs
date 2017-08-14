@@ -13,7 +13,7 @@ namespace Delegates
         public Transform target;
 
 
-        delegate void SpawnType(int amount);
+        delegate void SpawnType(int amount, Vector3 spawnPos);
         List<SpawnType> spawnType = new List<SpawnType>();
 
         void Awake()
@@ -32,27 +32,26 @@ namespace Delegates
 
         void SpawnFunc()
         {
-            //Instantiate(prefabs[Random.Range(0, 1)], targets[Random.Range(0, 1)]);
-            //Random.Range(minAmount, maxAmount)
             int RR = Random.Range(0, 2);
             int amount = Random.Range(minAmount, maxAmount);
-            spawnType[RR].Invoke(amount);
+            var spawnPos = targets[Random.Range(0, 2)].position;
+            spawnType[RR].Invoke(amount, spawnPos);
         }
 
-        void SpawnOrc(int amount)
+        void SpawnOrc(int amount, Vector3 spawnPos)
         {
             for (int i = 0; i < amount; i++)
             {
-                GameObject clone = Instantiate(prefabs[0], targets[Random.Range(0, 1)]);
+                GameObject clone = Instantiate(prefabs[0], spawnPos, transform.rotation);
                 clone.GetComponent<Orc>().SetTarget(target);
             }
         }
 
-        void SpawnTroll(int amount)
+        void SpawnTroll(int amount, Vector3 spawnPos)
         {
             for (int i = 0; i < amount; i++)
             {
-                GameObject clone = Instantiate(prefabs[1], targets[Random.Range(0, 1)]);
+                GameObject clone = Instantiate(prefabs[1], spawnPos, transform.rotation);
                 clone.GetComponent<Troll>().SetTarget(target);
             }
         }
