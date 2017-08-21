@@ -11,6 +11,7 @@ namespace AbstractClasses
 {
     public class Shotgun : Weapon
     {
+        public int shells = 5;
         public float shootAngle = 45f;
         public float shootRadius = 5f;
 
@@ -21,9 +22,22 @@ namespace AbstractClasses
             return transform.rotation * dir;
         }
 
-        public override void fire()
+        public override void Fire()
         {
-
+            //Loop through shells
+            for (int i = 0; i < shells; i++)
+            {
+                //Set b to spawnbullet()
+                Bullet b = SpawnBullet(transform.position, transform.rotation);
+                //Set randomAngle to random range between -shootAngle to shootAngle
+                float randomAngle = Random.Range(-shootAngle, shootAngle);
+                //Set direction to GetDir() and pass randomAngle
+                Vector2 direction = GetDir(randomAngle);
+                //Set b's aliveDistance to shootRadius
+                b.aliveDistance = shootRadius;
+                //Call b's Fire() and pass direction.
+                b.Fire(direction);
+            }
         }
     }
 

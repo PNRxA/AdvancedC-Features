@@ -9,7 +9,6 @@ namespace AbstractClasses
     {
         public float acceleration = 25f;
         public float hyperSpeed = 150f;
-        public float deceleration = .1f;
         public float rotationSpeed = 5f;
 
         private Rigidbody2D rigid;
@@ -29,7 +28,6 @@ namespace AbstractClasses
         void FixedUpdate()
         {
             Accelerate();
-            Decelerate();
             Rotate();
         }
 
@@ -45,12 +43,6 @@ namespace AbstractClasses
                 force *= acceleration;
             }
             rigid.AddForce(force);
-        }
-
-        void Decelerate()
-        {
-            //velocity += -velocity * deceleration
-            rigid.velocity += -rigid.velocity * deceleration;
         }
 
         void Rotate()
