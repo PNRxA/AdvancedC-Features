@@ -27,18 +27,28 @@ namespace Minesweeper3D
             RemoveBlock();
         }
 
+        void OnDrawGizmos()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            Gizmos.DrawRay(ray.origin, ray.direction * 100);
+        }
         void RemoveBlock()
         {
-            if (Input.GetButtonDown("Fire1"))
+            if (Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
 
+                Debug.DrawRay(ray.origin, ray.direction * 100, Color.red, 100);
+
                 if (Physics.Raycast(ray, out hit))
                 {
                     Block block = hit.collider.gameObject.GetComponent<Block>();
-                    GetAdjacentMineCountAt(block);
-                    Destroy(hit.collider.gameObject);
+                    if (block != null)
+                    {
+                        SelectBlock(block);
+                    }
                 }
 
             }
@@ -103,12 +113,12 @@ namespace Minesweeper3D
                 //Calculate adjacent element's index
                 int desiredX = b.x + x;
 
-                for (int y = -1; y < 1; y++)
+                for (int y = -1; y <= 1; y++)
                 {
                     //Calculate adjacent element's index
                     int desiredY = b.y + y;
 
-                    for (int z = -1; z < 1; z++)
+                    for (int z = -1; z <= 1; z++)
                     {
                         //Calculate adjacent element's index
                         int desiredZ = b.z + z;
@@ -127,8 +137,79 @@ namespace Minesweeper3D
                     }
                 }
             }
-            print(count.ToString());
             return count;
+        }
+
+        // Flood fill function to uncover all the empty elements
+        public void FFuncover(int x, int y, int z, bool[,,] visited)
+        {
+            // Coordinates in range?
+            if (x >= 0 && y >= 0 && z >= 0 && x < width && y < height && z < depth)
+            {
+                // Visited already?
+                if (visited[x, y, z]) return;
+
+                // Uncover element
+                Block block = blocks[x, y, z];
+                int adjacentMines = GetAdjacentMineCountAt(block);
+                block.Reveal(adjacentMines);
+
+                // Close to a mine?
+                if (adjacentMines > 0) return;
+
+                // Set visited flag
+                visited[x, y, z] = true;
+
+                // Perform recursion in each axis to detect adjacent elements
+                FFuncover(x - 1, y, z - 1, visited);
+                FFuncover(x + 1, y, z - 1, visited);
+                FFuncover(x, y - 1, z - 1, visited);
+                FFuncover(x, y + 1, z - 1, visited);
+                FFuncover(x, y, z - 1, visited);
+                FFuncover(x - 1, y, z, visited);
+                FFuncover(x + 1, y, z, visited);
+                FFuncover(x, y - 1, z, visited);
+                FFuncover(x, y + 1, z, visited);
+                FFuncover(x - 1, y, z + 1, visited);
+                FFuncover(x + 1, y, z + 1, visited);
+                FFuncover(x, y - 1, z + 1, visited);
+                FFuncover(x, y + 1, z + 1, visited);
+                FFuncover(x, y, z + 1, visited);
+            }
+        }
+
+        // Uncovers all mines that are in the grid
+        public void UncoverMines()
+        {
+            //Loop through all elemenets in array
+            foreach (Block block in blocks)
+            {
+                //If block is mine; reveal
+                if (block.isMine)
+                {
+                    block.Reveal(GetAdjacentMineCountAt(block));
+                }
+            }
+        }
+
+        // Takes in a block selected by the user in some way to reveal it
+        public void SelectBlock(Block selectedBlock)
+        {
+            int selectedAdjacentMinesCount = GetAdjacentMineCountAt(selectedBlock);
+            // Reveal the selected block
+            selectedBlock.Reveal(selectedAdjacentMinesCount);
+
+            // If the selected block is a mine
+            if (selectedBlock.isMine)
+            {
+                // Uncover all other mines
+                UncoverMines();
+            }
+            else if (selectedAdjacentMinesCount <= 0)
+            {
+                // Perform flood fill to reveal all empty blocks
+                FFuncover(selectedBlock.x, selectedBlock.y, selectedBlock.z, new bool[width, height, depth]);
+            }
         }
     }
 }
