@@ -7,6 +7,7 @@ public class CameraOrbitWithZoom : MonoBehaviour
     public Transform target; // The target point to rotate around
     public float distance = 5.0f; // The distance between the camera's point and the target
     public float sensitivity = 1f; // How sensitive the input is for rotating
+    public bool move = false;
 
     public float distanceMin = .5f; // Minimum allowed distance of camera
     public float distanceMax = 15f; // Maximum allowed distance of camera
@@ -34,13 +35,15 @@ public class CameraOrbitWithZoom : MonoBehaviour
 
     void LateUpdate()
     {
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1) || move)
         {
             HideCursor(true);
             GetInput();
+            Cursor.lockState = CursorLockMode.Locked;
         }
         else
         {
+            Cursor.lockState = CursorLockMode.None;
             HideCursor(false);
         }
     }
