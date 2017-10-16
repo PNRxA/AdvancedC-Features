@@ -12,8 +12,19 @@ public class CameraOrbitWithZoom : MonoBehaviour
     public float distanceMin = .5f; // Minimum allowed distance of camera
     public float distanceMax = 15f; // Maximum allowed distance of camera
 
+    [Header("Camera Collision")]
+    public LayerMask ignoreLayers;
+    public bool isEnabled = true;
+    public float colRadius = 5f;
+
     // Stored X and Y rotation in eulerAngles
     float x = .0f, y = .0f;
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, colRadius);
+    }
 
     // Use this for initialization
     void Start()
@@ -79,13 +90,31 @@ public class CameraOrbitWithZoom : MonoBehaviour
             // Coonvert x and y rotation to Quaternion using euler
             Quaternion rotation = Quaternion.Euler(y, x, 0);
 
+            float dist = GetCollisionDistance();
+
             // Calculate new position offset using rotation
-            Vector3 negDistance = new Vector3(.0f, .0f, -distance);
+            Vector3 negDistance = new Vector3(.0f, .0f, -dist);
             Vector3 position = rotation * negDistance + target.position;
 
             // Apply rotation and position to transform
             transform.rotation = rotation;
             transform.position = position;
         }
+    }
+
+    float GetCollisionDistance()
+    {
+        float desireDist = distance;
+        Quaternion rotation = Quaternion.Euler(y, x, 0);
+        Vector3 back = rotation * new Vector3(0, 0, -distance);
+        Ray targetRay = new Ray(target.position, back);
+        RaycastHit hit;
+        if (Physics.SphereCast(targetRay, colRadius, out hit, desireDist, ~ignoreLayers))
+        {
+            Vector3 point = hit.point + hit.normal * colRadius;
+            desireDist = Vector3.Distance(target.position, point);
+        }
+
+        return desireDist;
     }
 }
